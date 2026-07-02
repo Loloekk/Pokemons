@@ -1,0 +1,104 @@
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import { useState, useEffect } from 'react'
+
+type PokemonStats = {
+    name: string;
+    height: number;
+    weight: number;
+    sprites: {
+        front_default: string | null;
+    };
+}
+
+type PokemonScreenProps = {
+    pokemonName?: string;
+}
+
+export default function PokemonScreen({pokemonName = 'bulbasaur'}: PokemonScreenProps) {
+    const [pokemon, setPokemon] = useState<PokemonStats | null>(null);
+    const [isLoading, setIsLoding] = useState(true);
+
+    useEffect(() => {
+        const fetchPokemon = async () => {
+            setIsLoding(true);
+            try {
+                const response = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonName);
+                let data = await response.json();
+                setPokemon(data);
+            }
+            catch (error) {
+                console.error("Pokemon fetch error: ", error)
+            }
+            finally {
+                setIsLoding(false);
+            }
+        }
+        fetchPokemon();
+    }, []);
+
+    if (isLoading) {
+        return <Text>Loading!</Text>;
+    }
+
+    if (!pokemon) {
+        return <Text>Pokemon fetch failed</Text>
+    }
+
+    return (
+        <View style={styles.card}>
+            <View style={styles.name_card} >
+                <Text style={styles.title}>{pokemon.name}</Text>
+
+            </View>
+            {pokemon.sprites && pokemon.sprites.front_default && (
+                <Image
+                    source={{ uri: pokemon.sprites.front_default }}
+                    style={styles.image}
+                />
+            )}
+            <Text style={styles.params}>Height: {pokemon.height}</Text>
+            <Text style={styles.params}>Weight: {pokemon.weight}</Text>
+        </View>
+    );
+}
+
+
+const styles = StyleSheet.create({
+    card: {
+        alignItems: 'center',
+        padding: 20,
+        borderRadius: 10,
+        backgroundColor: '#aaa',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    name_card: {
+        alignItems: 'center',
+        padding: 5,
+        borderRadius: 5,
+        backgroundColor: '#ccc',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    title: {
+        fontSize: 48,
+        fontWeight: 'bold',
+        textTransform: 'capitalize',
+    },
+    params: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textTransform: 'capitalize',
+    },
+    image: {
+        width: 200,
+        height: 200,
+    },
+});
