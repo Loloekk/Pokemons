@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { useState, useEffect } from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type PokemonStats = {
     name: string;
@@ -16,15 +17,16 @@ type PokemonScreenProps = {
 }
 
 export default function PokemonScreen({pokemonName = 'bulbasaur'}: PokemonScreenProps) {
+    const insets = useSafeAreaInsets();
     const [pokemon, setPokemon] = useState<PokemonStats | null>(null);
-    const [isLoading, setIsLoding] = useState(true);
+    const [isLoading, setIsLoding] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchPokemon = async () => {
             setIsLoding(true);
             try {
                 const response = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonName);
-                let data = await response.json();
+                const data = await response.json();
                 setPokemon(data);
             }
             catch (error) {
@@ -35,7 +37,7 @@ export default function PokemonScreen({pokemonName = 'bulbasaur'}: PokemonScreen
             }
         }
         fetchPokemon();
-    }, []);
+    }, [pokemonName]);
 
     if (isLoading) {
         return <Text>Loading!</Text>;
@@ -46,25 +48,35 @@ export default function PokemonScreen({pokemonName = 'bulbasaur'}: PokemonScreen
     }
 
     return (
-        <View style={styles.card}>
-            <View style={styles.name_card} >
+        <View style={[styles.container, {paddingTop: insets.top+20}]}>
+            
+            
+            <View style={styles.header} >
                 <Text style={styles.title}>{pokemon.name}</Text>
-
             </View>
-            {pokemon.sprites && pokemon.sprites.front_default && (
-                <Image
+            <View style={[styles.card, {
+                marginLeft: insets.left + 10,
+                marginRight: insets.right + 10,
+                marginTop: 10}]} >
+                {pokemon.sprites && pokemon.sprites.front_default && (
+                    <Image
                     source={{ uri: pokemon.sprites.front_default }}
                     style={styles.image}
-                />
-            )}
-            <Text style={styles.params}>Height: {pokemon.height}</Text>
-            <Text style={styles.params}>Weight: {pokemon.weight}</Text>
+                    />
+                )}
+                <Text style={styles.params}>Height: {pokemon.height}</Text>
+                <Text style={styles.params}>Weight: {pokemon.weight}</Text>
+            </View>
         </View>
     );
 }
 
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+    },
     card: {
         alignItems: 'center',
         padding: 20,
@@ -76,21 +88,16 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
-    name_card: {
+    header: {
+        padding: 20,
+        backgroundColor: '#e3350d',
         alignItems: 'center',
-        padding: 5,
-        borderRadius: 5,
-        backgroundColor: '#ccc',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
     },
     title: {
-        fontSize: 48,
+        fontSize: 24,
         fontWeight: 'bold',
         textTransform: 'capitalize',
+        color: 'white',
     },
     params: {
         fontSize: 24,

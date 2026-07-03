@@ -1,6 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, SafeAreaView } from 'react-native';
-import { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, Pressable} from 'react-native';
+import { useState } from 'react'
+import { Link } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Pokemon = {
@@ -52,13 +52,17 @@ export default function PokemonListScreen() {
 
 
     const renderItem = ({ item }: { item: Pokemon }) => (
-        <View style={styles.card}>
-            <Image 
-                source={{uri: getPokemonImageUrl(item)}} 
-                style={styles.image} 
-            />
-            <Text style={styles.name}>{item.name}</Text>
-        </View>
+        <Link href={`/pokemon/${item.name}`} asChild>
+            <Pressable>
+                <View style={styles.card}>
+                    <Image 
+                        source={{uri: getPokemonImageUrl(item)}} 
+                        style={styles.image} 
+                        />
+                    <Text style={styles.name}>{item.name}</Text>
+                </View>
+            </Pressable>
+        </Link>
     );
 
     const renderFooter = () => {
