@@ -1,27 +1,46 @@
 import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, Pressable} from 'react-native';
-import { useState } from 'react'
+// import { useEffect, useState } from 'react'
 import { Link } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { fetchPokemonPage } from '../api/pokemon';
 
 type Pokemon = {
     name: string;
     url: string | null;
 }
 
-type PokemonListResponse = {
-    count : number;
-    next : string | null;
-    previous: string | null;
-    results: Pokemon[];
-}
 
 export default function PokemonListScreen() {
     const insets = useSafeAreaInsets();
-    const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-    const [isLoading, setIsLoding] = useState<boolean> (false);
-    const [nextUrl, setNextUrl] = useState<string | null> ('https://pokeapi.co/api/v2/pokemon/?offset=0&limit=10');
+    const {
+        data,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteQuery({
+        queryKey: ['pokemon-list'],
+        queryFn: ({pageParam}) => fetchPokemonPage(pageParam),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => {
+            if (!lastPage.next) return undefined;
+            const url = new URL(lastPage.next);
+            return Number(url.searchParams.get('offset'));
+        }
+    });
 
-
+    const pokemons = data?.pages.flatMap((page) => {
+        // console.log(page);
+        return page.results;
+    }) ?? [];
+    // console.log(pokemons);
+    const loadPokemons = ()=>{
+        if (hasNextPage && !isFetchingNextPage)
+        {
+            fetchNextPage();
+        }
+    }
 
     const getPokemonImageUrl = (pokemon: Pokemon) => {
         if (!pokemon.url) return "";
@@ -31,25 +50,6 @@ export default function PokemonListScreen() {
     
         return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
     };
-
-    const fetchPokemons = async () => {
-        if (isLoading || !nextUrl)
-            return;
-        try{
-            setIsLoding(true);
-            const response = await fetch(nextUrl);
-            const data: PokemonListResponse = await response.json();
-            setPokemons(prevPokemons => [...prevPokemons, ...data.results]);
-            setNextUrl(data.next);
-        }   
-        catch (error){
-            console.error('Pokemons list fetch failed: ', error);
-        }
-        finally{
-            setIsLoding(false);
-        }
-    }
-
 
     const renderItem = ({ item }: { item: Pokemon }) => (
         <Link href={`/pokemon/${item.name}`} asChild>
@@ -66,7 +66,7 @@ export default function PokemonListScreen() {
     );
 
     const renderFooter = () => {
-        if (!isLoading) return null;
+        if (!isFetchingNextPage) return null;
         return (
             <View style={styles.loaderContainer}>
                 <ActivityIndicator size="large" color="#e3350d" />
@@ -74,17 +74,26 @@ export default function PokemonListScreen() {
         );
     };
 
+    if (isLoading)
+    {
+        return (
+            <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color="#e3350d" />
+            </View>
+        )
+    }
+
     return (
         <View style={[styles.container,{paddingTop: insets.top+20}]}>
             <View style={styles.header}>
                 <Text style={styles.title}>Pokemons</Text>
             </View>
 
-            <FlatList
+            <FlatList style={{flex: 1}}
                 data={pokemons}
                 keyExtractor={(item) => item.name}
                 renderItem={renderItem}
-                onEndReached={fetchPokemons}
+                onEndReached={loadPokemons}
                 onEndReachedThreshold={0.5} 
                 ListFooterComponent={renderFooter}
                 contentContainerStyle={styles.listContainer}
