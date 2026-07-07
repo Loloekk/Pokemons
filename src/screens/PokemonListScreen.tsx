@@ -1,17 +1,9 @@
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-// import { useEffect, useState } from 'react'
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { fetchPokemonPage } from "../api/pokemon";
+import Loader from "../components/Loader";
+import PokemonList from "../components/PokemonList";
 
 type Pokemon = {
   name: string;
@@ -19,7 +11,6 @@ type Pokemon = {
 };
 
 export default function PokemonListScreen() {
-  const insets = useSafeAreaInsets();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["pokemon-list"],
@@ -34,10 +25,9 @@ export default function PokemonListScreen() {
 
   const pokemons =
     data?.pages.flatMap((page) => {
-      // console.log(page);
       return page.results;
     }) ?? [];
-  // console.log(pokemons);
+
   const loadPokemons = () => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -69,59 +59,24 @@ export default function PokemonListScreen() {
 
   const renderFooter = () => {
     if (!isFetchingNextPage) return null;
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#e3350d" />
-      </View>
-    );
+    return <Loader />;
   };
 
   if (isLoading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#e3350d" />
-      </View>
-    );
+    return <Loader />;
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Pokemons</Text>
-      </View>
-
-      <FlatList
-        style={{ flex: 1 }}
-        data={pokemons}
-        keyExtractor={(item) => item.name}
-        renderItem={renderItem}
-        onEndReached={loadPokemons}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={renderFooter}
-        contentContainerStyle={styles.listContainer}
-      />
-    </View>
+    <PokemonList
+      data={pokemons}
+      renderItem={renderItem}
+      loadPokemons={loadPokemons}
+      renderFooter={renderFooter}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  header: {
-    padding: 20,
-    backgroundColor: "#e3350d",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
-  },
-  listContainer: {
-    padding: 16,
-  },
   card: {
     flexDirection: "row",
     alignItems: "center",
@@ -147,9 +102,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "capitalize",
     color: "#333",
-  },
-  loaderContainer: {
-    paddingVertical: 20,
-    alignItems: "center",
   },
 });

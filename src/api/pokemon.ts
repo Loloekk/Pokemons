@@ -1,3 +1,5 @@
+import { LIST_PAGE_SIZE } from "../constants/api";
+
 type PokemonListResponse = {
   count: number;
   next: string | null;
@@ -5,14 +7,11 @@ type PokemonListResponse = {
   results: { name: string; url: string | null }[];
 };
 
-const PAGE_SIZE = 20;
-
 export async function fetchPokemonPage(
   offset: number,
 ): Promise<PokemonListResponse> {
-  // console.log(offset);
   const response = await fetch(
-    `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${PAGE_SIZE}`,
+    `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${LIST_PAGE_SIZE}`,
   );
   if (!response.ok) throw new Error("Failed to fetch pokemons");
   const data: PokemonListResponse = await response.json();

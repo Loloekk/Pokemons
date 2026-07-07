@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import PokemonScreen from "../../screens/PokemonScreen";
+import PokemonDetailsScreen from "../../screens/PokemonDetailsScreen";
 
 export default function PokemomDetailPage() {
   const { name } = useLocalSearchParams<{ name: string }>();
@@ -11,7 +11,7 @@ export default function PokemomDetailPage() {
           title: "",
         }}
       />
-      <PokemonScreen key={name} pokemonNameProp={name} type="details" />
+      <PokemonDetailsScreen key={name} pokemonName={name} />
     </>
   );
 }

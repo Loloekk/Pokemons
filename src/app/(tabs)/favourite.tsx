@@ -1,5 +1,4 @@
-import PokemonScreen from "../../screens/PokemonScreen";
-
+import FavouritePokemonScreen from "../../screens/FavouritePokemonScreen";
 export default function FavouritePage() {
-  return <PokemonScreen type="favourite" />;
+  return <FavouritePokemonScreen />;
 }
