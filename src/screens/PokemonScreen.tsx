@@ -1,17 +1,17 @@
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
+  ActivityIndicator,
+  Image,
+  Pressable,
   StyleSheet,
   Text,
   View,
-  Image,
-  ActivityIndicator,
-  Pressable,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState, useCallback } from "react";
-import { useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FAVOURITE_KEY } from "../constants/storage";
-import { Ionicons } from "@expo/vector-icons";
 
 type PokemonStats = {
   name: string;

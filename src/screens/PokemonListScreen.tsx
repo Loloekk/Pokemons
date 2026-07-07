@@ -1,16 +1,16 @@
 import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
   StyleSheet,
   Text,
   View,
-  Image,
-  FlatList,
-  ActivityIndicator,
-  Pressable,
 } from "react-native";
 // import { useEffect, useState } from 'react'
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPokemonPage } from "../api/pokemon";
 
 type Pokemon = {
