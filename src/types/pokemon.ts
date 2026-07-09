@@ -7,7 +7,13 @@ export type PokemonStats = {
   };
 };
 
-export type PokemonListItem = {
+export type PokemonListItemProps = {
   name: string;
   url: string | null;
+};
+
+export type PokemonMarker = {
+  latitude: number;
+  longitude: number;
+  name: string;
 };

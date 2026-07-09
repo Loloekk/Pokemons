@@ -1,11 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useQuery } from "@tanstack/react-query";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+import { fetchPokemon } from "../api/pokemon";
 import Loader from "../components/Loader";
 import PokemonCard from "../components/PokemonCard";
 import PokemonFetchFailed from "../components/PokemonFetchFailed";
-import { FAVOURITE_KEY } from "../constants/storage";
-import { PokemonStats } from "../types/pokemon";
+import { useFavouritePokemonName } from "../storage/favouritePokemon";
 
 type PokemonDetailsScreenProps = {
   pokemonName: string;
@@ -14,78 +14,42 @@ type PokemonDetailsScreenProps = {
 export default function PokemonDetailsScreen({
   pokemonName,
 }: PokemonDetailsScreenProps) {
-  const [favouritePokemonName, setFavouritePokemonName] = useState<
-    string | null
-  >(null);
-  const [pokemon, setPokemon] = useState<PokemonStats | null>(null);
-  const [isFetchingPokemon, setIsFetchingPokemon] = useState<boolean>(true);
-  const [isLoadingFavouritePokemon, setIsLoadingFavouritePokemon] =
-    useState<boolean>(true);
+  const {
+    favouritePokemonName,
+    isLoading: isLoadingFavourite,
+    refetch: refetchFavourite,
+    toggleFavourite: toggleFavouritePokemon,
+  } = useFavouritePokemonName();
 
-  const loadFavouritePokemon = useCallback(async () => {
-    setIsLoadingFavouritePokemon(true);
-    const favouriteName = await AsyncStorage.getItem(FAVOURITE_KEY);
-    setFavouritePokemonName(favouriteName);
-    setIsLoadingFavouritePokemon(false);
-  }, []);
-
-  useEffect(() => {
-    const fetchPokemon = async () => {
-      setIsFetchingPokemon(true);
-      try {
-        const response = await fetch(
-          `https://pokeapi.co/api/v2/pokemon/${pokemonName}`,
-        );
-        const data = await response.json();
-        setPokemon(data);
-      } catch (error) {
-        console.error("Pokemon fetch error:", error);
-        setPokemon(null);
-      } finally {
-        setIsFetchingPokemon(false);
-      }
-    };
-    fetchPokemon();
-  }, [pokemonName]);
+  const {
+    data: pokemon,
+    isLoading: isLoadingPokemon,
+    isError,
+  } = useQuery({
+    queryKey: ["pokemon", pokemonName],
+    queryFn: () => fetchPokemon(pokemonName),
+    enabled: !!pokemonName,
+  });
 
   useFocusEffect(
     useCallback(() => {
-      loadFavouritePokemon();
-    }, [loadFavouritePokemon]),
+      refetchFavourite();
+    }, [refetchFavourite]),
   );
 
-  if (isFetchingPokemon || isLoadingFavouritePokemon) {
+  if (isLoadingPokemon || isLoadingFavourite) {
     return <Loader />;
   }
 
-  if (!pokemon) {
+  if (isError || !pokemon) {
     return <PokemonFetchFailed />;
   }
 
-  const toggleFavourite = async () => {
-    if (pokemonName === favouritePokemonName) {
-      try {
-        await AsyncStorage.removeItem(FAVOURITE_KEY);
-        setFavouritePokemonName(null);
-      } catch (error) {
-        console.error("Unlike pokemon failed", error);
-      }
-    } else {
-      try {
-        if (pokemonName) {
-          await AsyncStorage.setItem(FAVOURITE_KEY, pokemonName);
-          setFavouritePokemonName(pokemonName);
-        } else {
-          await AsyncStorage.removeItem(FAVOURITE_KEY);
-          setFavouritePokemonName(null);
-        }
-      } catch (error) {
-        console.error("Like pokemon error", error);
-      }
-    }
-  };
-
   const isFavourite = favouritePokemonName === pokemonName;
+
+  const toggleFavourite = async () => {
+    await toggleFavouritePokemon(isFavourite ? null : pokemonName);
+  };
 
   return (
     <PokemonCard

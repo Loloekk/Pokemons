@@ -9,6 +9,7 @@ export default function PokemomDetailPage() {
         options={{
           headerShown: true,
           title: "",
+          headerBackButtonDisplayMode: "minimal",
         }}
       />
       <PokemonDetailsScreen key={name} pokemonName={name} />

@@ -1,8 +1,8 @@
 import { FlatList, ListRenderItem, StyleSheet, Text, View } from "react-native";
-import { PokemonListItem } from "../types/pokemon";
+import { PokemonListItemProps } from "../types/pokemon";
 type PokemonListProps = {
-  data: PokemonListItem[];
-  renderItem: ListRenderItem<PokemonListItem>;
+  data: PokemonListItemProps[];
+  renderItem: ListRenderItem<PokemonListItemProps>;
   loadPokemons: () => void;
   renderFooter: () => React.ReactElement | null;
 };
