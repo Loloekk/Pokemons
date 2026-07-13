@@ -12,7 +12,7 @@ export type PokemonListItemProps = {
   url: string | null;
 };
 
-export type PokemonMarker = {
+export type PokemonMapMarkerProps = {
   latitude: number;
   longitude: number;
   name: string;

@@ -1,25 +1,50 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
+import { useQuery } from "@tanstack/react-query";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { PokemonStats } from "../types/pokemon";
+import { fetchPokemon } from "../../api/pokemon";
+import { useFavouritePokemonName } from "../../storage/favouritePokemon";
+import Loader from "../Loader";
+import PokemonImage from "../PokemonImage";
 
 export type PokemonCardProps = {
-  pokemon: PokemonStats;
-  isLiked: boolean;
-  toggleFavourite: () => Promise<void>;
+  pokemonName: string;
+  // isLiked: boolean;
+  // toggleFavourite: () => Promise<void>;
+  toggleRemoveFromMap?: () => Promise<void>;
 };
 
 export default function PokemonCard({
-  pokemon,
-  isLiked,
-  toggleFavourite,
+  pokemonName,
+  toggleRemoveFromMap,
 }: PokemonCardProps) {
+  const { data: pokemon } = useQuery({
+    queryKey: ["pokemon", pokemonName],
+    queryFn: () => fetchPokemon(pokemonName),
+    enabled: !!pokemonName,
+  });
+  const { favouritePokemonName, toggleFavourite } = useFavouritePokemonName();
+
+  const isLiked = favouritePokemonName === pokemonName;
+
+  if (!pokemon) {
+    return <Loader size="large" />;
+  }
+
   return (
     <View style={[styles.container]}>
       <View style={styles.header}>
+        {toggleRemoveFromMap && (
+          <Pressable
+            onPress={toggleRemoveFromMap}
+            style={styles.removeButton}
+            hitSlop={12}
+          >
+            <Ionicons name="trash" size={28} color="white" />
+          </Pressable>
+        )}
         <Text style={styles.title}>{pokemon.name}</Text>
         <Pressable
-          onPress={toggleFavourite}
+          onPress={() => toggleFavourite(isLiked ? null : pokemonName)}
           style={styles.heartButton}
           hitSlop={12}
         >
@@ -40,14 +65,17 @@ export default function PokemonCard({
           },
         ]}
       >
-        {pokemon.sprites && pokemon.sprites.front_default && (
-          <Image
-            source={{ uri: pokemon.sprites.front_default }}
-            style={styles.image}
-          />
-        )}
-        <Text style={styles.params}>Height: {pokemon.height}</Text>
-        <Text style={styles.params}>Weight: {pokemon.weight}</Text>
+        <PokemonImage
+          pokemonName={pokemon.name}
+          style={styles.image}
+          loaderSize="large"
+        />
+        <Text style={[styles.params, { marginTop: 20 }]}>
+          Height: {pokemon.height}
+        </Text>
+        <Text style={[styles.params, { marginTop: 10 }]}>
+          Weight: {pokemon.weight}
+        </Text>
       </View>
     </View>
   );
@@ -89,10 +117,16 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+    alignSelf: "center",
   },
   heartButton: {
     position: "absolute",
     right: 20,
+    top: 20,
+  },
+  removeButton: {
+    position: "absolute",
+    left: 20,
     top: 20,
   },
 });

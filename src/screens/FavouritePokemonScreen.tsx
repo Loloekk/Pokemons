@@ -1,20 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { fetchPokemon } from "../api/pokemon";
 import Loader from "../components/Loader";
-import NoFavouritePokemon from "../components/NoFavourtiePokemon";
-import PokemonCard from "../components/PokemonCard";
-import FetchingPokemonFailed from "../components/PokemonFetchFailed";
+import NoFavouritePokemon from "../components/PokemonScreen/NoFavourtiePokemon";
+import PokemonCard from "../components/PokemonScreen/PokemonCard";
 import { useFavouritePokemonName } from "../storage/favouritePokemon";
+
 export default function FavouritePokemonScreen() {
   const [pokemonName, setPokemonName] = useState<string | null>(null);
 
   const {
-    favouritePokemonName,
+    // favouritePokemonName,
     isLoading: isLoadingFavourite,
     refetch: refetchFavourite,
-    toggleFavourite: toggleFavouritePokemon,
   } = useFavouritePokemonName();
 
   useFocusEffect(
@@ -26,37 +23,33 @@ export default function FavouritePokemonScreen() {
     }, [refetchFavourite]),
   );
 
-  const {
-    data: pokemon,
-    isLoading: isLoadingPokemon,
-    isError: isErrorPokemon,
-  } = useQuery({
-    queryKey: ["pokemon", pokemonName],
-    queryFn: () => fetchPokemon(pokemonName),
-    enabled: !!pokemonName,
-  });
+  // // const {
+  // //   data: pokemon,
+  // //   isLoading: isLoadingPokemon,
+  // //   isError: isErrorPokemon,
+  // // } = useQuery({
+  // //   queryKey: ["pokemon", pokemonName],
+  // //   queryFn: () => fetchPokemon(pokemonName),
+  // //   enabled: !!pokemonName,
+  // });
 
-  if (isLoadingPokemon || isLoadingFavourite) {
+  if (isLoadingFavourite) {
     return <Loader />;
   }
 
-  if (!favouritePokemonName && !pokemonName) {
+  if (!pokemonName) {
     return <NoFavouritePokemon />;
   }
 
-  if (isErrorPokemon || !pokemon) {
-    return <FetchingPokemonFailed />;
-  }
-
-  const toggleFavourite = async () => {
-    await toggleFavouritePokemon(favouritePokemonName ? null : pokemonName);
-  };
+  // const toggleFavourite = async () => {
+  //   await toggleFavouritePokemon(favouritePokemonName ? null : pokemonName);
+  // };
 
   return (
     <PokemonCard
-      pokemon={pokemon}
-      isLiked={!!favouritePokemonName}
-      toggleFavourite={toggleFavourite}
+      pokemonName={pokemonName}
+      // isLiked={!!favouritePokemonName}
+      // toggleFavourite={toggleFavourite}
     />
   );
 }

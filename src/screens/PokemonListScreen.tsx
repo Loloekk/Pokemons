@@ -1,8 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { Link } from "expo-router";
+import { Pressable } from "react-native";
 import { fetchPokemonPage } from "../api/pokemon";
 import Loader from "../components/Loader";
-import PokemonList from "../components/PokemonList";
-import PokemonListItem from "../components/PokemonListItem";
+import PokemonList from "../components/PokemonListScreen/PokemonList";
+import PokemonListItem from "../components/PokemonListScreen/PokemonListItem";
+import { PokemonListItemProps } from "../types/pokemon";
 
 export default function PokemonListScreen() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -28,16 +31,6 @@ export default function PokemonListScreen() {
     }
   };
 
-  // const getPokemonImageUrl = (pokemon: PokemonListItemProps) => {
-  //   const { data: pokemonData } = useQuery({
-  //     queryKey: ["pokemon", pokemon.name],
-  //     queryFn: () => fetchPokemon(pokemon.name),
-  //     enabled: !!pokemon.name,
-  //   });
-  //   if (!pokemonData) return "";
-  //   return pokemonData.sprites.front_default;
-  // };
-
   const renderFooter = () => {
     if (!isFetchingNextPage) return null;
     return <Loader />;
@@ -47,10 +40,20 @@ export default function PokemonListScreen() {
     return <Loader />;
   }
 
+  const renderItem = ({ item }: { item: PokemonListItemProps }) => {
+    return (
+      <Link href={`/pokemon/${item.name}`} asChild>
+        <Pressable>
+          <PokemonListItem pokemonProps={item} />
+        </Pressable>
+      </Link>
+    );
+  };
+
   return (
     <PokemonList
       data={pokemons}
-      renderItem={({ item }) => <PokemonListItem pokemonProps={item} />}
+      renderItem={renderItem}
       loadPokemons={loadPokemons}
       renderFooter={renderFooter}
     />

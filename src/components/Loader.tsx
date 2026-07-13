@@ -1,16 +1,33 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  ActivityIndicatorProps,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 
-export default function Loader() {
+interface LoaderProps {
+  style?: StyleProp<ViewStyle>;
+  size?: ActivityIndicatorProps["size"];
+  color?: ActivityIndicatorProps["color"];
+}
+export default function Loader({
+  style,
+  size = "large",
+  color = "#e3350d",
+}: LoaderProps) {
   return (
-    <View style={styles.loaderContainer}>
-      <ActivityIndicator size="large" color="#e3350d" />
+    <View style={[defaultStyles.container, style]}>
+      <ActivityIndicator size={size} color={color} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  loaderContainer: {
+const defaultStyles = StyleSheet.create({
+  container: {
     paddingVertical: 20,
     alignItems: "center",
+    justifyContent: "center",
   },
 });
