@@ -5,7 +5,7 @@ import { fetchPokemonPage } from "../api/pokemon";
 import Loader from "../components/Loader";
 import PokemonList from "../components/PokemonListScreen/PokemonList";
 import PokemonListItem from "../components/PokemonListScreen/PokemonListItem";
-import { PokemonListItemProps } from "../types/pokemon";
+import { PokemonDataProps } from "../types/pokemon";
 
 export default function PokemonListScreen() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -40,7 +40,7 @@ export default function PokemonListScreen() {
     return <Loader />;
   }
 
-  const renderItem = ({ item }: { item: PokemonListItemProps }) => {
+  const renderItem = ({ item }: { item: PokemonDataProps }) => {
     return (
       <Link href={`/pokemon/${item.name}`} asChild>
         <Pressable>

@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
     "@gorhom/bottom-sheet": "^5.2.14",
+    "@noma4i/vision-camera-face-detector": "^3.0.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@tanstack/react-query": "^5.101.2",
     "expo": "~57.0.1",
@@ -21,9 +22,13 @@
     "react-native": "0.86.0",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-maps": "1.27.2",
+    "react-native-nitro-image": "^0.15.1",
+    "react-native-nitro-modules": "^0.36.1",
     "react-native-reanimated": "4.5.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
+    "react-native-vision-camera": "^5.1.0",
+    "react-native-worklets-core": "^1.6.3",
     "run": "^1.5.0"
   },
   "devDependencies": {
@@ -40,7 +45,6 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "karol": "expo run:ios --device 00008130-00166DCC346B803A",
-    "gladki": "expo run:android --device SM_S931B",
     "web": "expo start --web",
     "lint": "expo lint"
   },

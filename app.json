@@ -10,7 +10,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.Pokemons",
       "infoPlist": {
-        "UIViewControllerBasedStatusBarAppearance": true
+        "UIViewControllerBasedStatusBarAppearance": true,
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera to capture photos and videos."
       }
     },
     "android": {
@@ -21,7 +22,8 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.Pokemons"
+      "package": "com.anonymous.Pokemons",
+      "permissions": ["android.permission.CAMERA"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,7 +35,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow $(Pokemons) to use your location when in use."
+          "locationWhenInUsePermission": "Allow Pokemons to use your location when in use."
         }
       ]
     ],

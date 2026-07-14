@@ -1,7 +1,4 @@
-import { useFocusEffect } from "expo-router";
-import { useCallback } from "react";
 import PokemonCard from "../components/PokemonScreen/PokemonCard";
-import { useFavouritePokemonName } from "../storage/favouritePokemon";
 type PokemonDetailsScreenProps = {
   pokemonName: string;
 };
@@ -9,12 +6,12 @@ type PokemonDetailsScreenProps = {
 export default function PokemonDetailsScreen({
   pokemonName,
 }: PokemonDetailsScreenProps) {
-  const {
-    // favouritePokemonName,
-    // isLoading: isLoadingFavourite,
-    refetch: refetchFavourite,
-    // toggleFavourite: toggleFavouritePokemon,
-  } = useFavouritePokemonName();
+  // const {
+  //   // favouritePokemonName,
+  //   // isLoading: isLoadingFavourite,
+  //   refetch: refetchFavourite,
+  //   // toggleFavourite: toggleFavouritePokemon,
+  // } = useFavouritePokemonName();
 
   // const {
   //   data: pokemon,
@@ -26,11 +23,11 @@ export default function PokemonDetailsScreen({
   //   enabled: !!pokemonName,
   // });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetchFavourite();
-    }, [refetchFavourite]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     refetchFavourite();
+  //   }, [refetchFavourite]),
+  // );
 
   // if (isLoadingPokemon || isLoadingFavourite) {
   //   return <Loader />;

@@ -20,7 +20,7 @@ import PokemonListItem from "../components/PokemonListScreen/PokemonListItem";
 import PokemonCard from "../components/PokemonScreen/PokemonCard";
 import { TEMPORARY_MARKER_NAME } from "../constants/map";
 import { usePokemonMapMarkers } from "../storage/pokemonMapMarkers";
-import { PokemonListItemProps, PokemonMapMarkerProps } from "../types/pokemon";
+import { PokemonDataProps, PokemonMapMarkerProps } from "../types/pokemon";
 
 export default function MapScreen() {
   const [pendingLocation, setPendingLocation] = useState<{
@@ -175,7 +175,7 @@ export default function MapScreen() {
     setPendingLocation(null);
   };
 
-  const handlePokemonSelect = async (pokemon: PokemonListItemProps) => {
+  const handlePokemonSelect = async (pokemon: PokemonDataProps) => {
     if (!pendingLocation) return;
     setPendingLocation(null);
     pickerSheetRef.current?.close();
@@ -207,7 +207,7 @@ export default function MapScreen() {
     });
   };
 
-  const renderItem = ({ item }: { item: PokemonListItemProps }) => {
+  const renderItem = ({ item }: { item: PokemonDataProps }) => {
     return (
       <Pressable onPress={() => handlePokemonSelect(item)}>
         <PokemonListItem pokemonProps={item} />

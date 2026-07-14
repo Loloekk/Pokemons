@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import { PokemonListItemProps } from "../../types/pokemon";
+import { PokemonDataProps } from "../../types/pokemon";
 import PokemonImage from "../PokemonImage";
 export default function PokemonListItem({
   pokemonProps,
 }: {
-  pokemonProps: PokemonListItemProps;
+  pokemonProps: PokemonDataProps;
 }) {
   return (
     <View style={styles.card}>

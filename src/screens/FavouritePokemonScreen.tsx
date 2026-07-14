@@ -4,7 +4,6 @@ import Loader from "../components/Loader";
 import NoFavouritePokemon from "../components/PokemonScreen/NoFavourtiePokemon";
 import PokemonCard from "../components/PokemonScreen/PokemonCard";
 import { useFavouritePokemonName } from "../storage/favouritePokemon";
-
 export default function FavouritePokemonScreen() {
   const [pokemonName, setPokemonName] = useState<string | null>(null);
 

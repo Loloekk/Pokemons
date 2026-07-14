@@ -7,7 +7,7 @@ export type PokemonStats = {
   };
 };
 
-export type PokemonListItemProps = {
+export type PokemonDataProps = {
   name: string;
   url: string | null;
 };

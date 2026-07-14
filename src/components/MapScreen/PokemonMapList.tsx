@@ -4,10 +4,10 @@ import {
 } from "@gorhom/bottom-sheet";
 import { forwardRef } from "react";
 import { ListRenderItem, StyleSheet, Text, View } from "react-native";
-import { PokemonListItemProps } from "../../types/pokemon";
+import { PokemonDataProps } from "../../types/pokemon";
 type PokemonListProps = {
-  data: PokemonListItemProps[];
-  renderItem: ListRenderItem<PokemonListItemProps>;
+  data: PokemonDataProps[];
+  renderItem: ListRenderItem<PokemonDataProps>;
   loadPokemons: () => void;
   renderFooter: () => React.ReactElement | null;
 };

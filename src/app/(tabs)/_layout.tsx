@@ -45,6 +45,16 @@ export default function RootLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="camera"
+          options={{
+            title: "Camera",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name={"camera"} color={color} size={size} />
+            ),
+            lazy: true,
+          }}
+        />
       </Tabs>
     </View>
   );
