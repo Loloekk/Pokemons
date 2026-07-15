@@ -53,7 +53,7 @@ export default function CameraWithFaceDetection({
       top: withSpring(pokemonCenterY - size / 2),
       width: withSpring(size),
       height: withSpring(size),
-      transform: [{ rotate: `${withSpring(angle)}deg` }],
+      transform: [{ rotate: withSpring(`${angle}deg`) }],
     };
   });
 
