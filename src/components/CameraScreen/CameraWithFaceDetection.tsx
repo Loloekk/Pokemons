@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Image, Platform, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { useCallback, useState } from "react";
+import { Platform, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -20,44 +21,71 @@ export default function CameraWithFaceDetection({
 }) {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const isAndroid = Platform.OS === "android";
-  const face = useSharedValue<Face | null>(null);
+  const pokemonLeft = useSharedValue<number>(0);
+  const pokemonTop = useSharedValue<number>(0);
+  const pokemonWidth = useSharedValue<number>(0);
+  const pokemonHeight = useSharedValue<number>(0);
+  const pokemonRotation = useSharedValue<string>("0deg");
 
   const animatedStyle = useAnimatedStyle(() => {
-    const leftEye = isAndroid
-      ? face.value?.landmarks?.RIGHT_EYE
-      : face.value?.landmarks?.LEFT_EYE;
-    const rightEye = isAndroid
-      ? face.value?.landmarks?.LEFT_EYE
-      : face.value?.landmarks?.RIGHT_EYE;
-
-    const hasEyes = leftEye && rightEye;
-
-    const dx = hasEyes ? rightEye.x - leftEye.x : 0;
-    const dy = hasEyes ? rightEye.y - leftEye.y : 0;
-    const size = Math.hypot(dx, dy);
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-
-    const middleX = hasEyes ? (leftEye.x + rightEye.x) / 2 : 0;
-    const middleY = hasEyes ? (leftEye.y + rightEye.y) / 2 : 0;
-
-    const normalX = size > 0 ? dy / size : 0;
-    const normalY = size > 0 ? -dx / size : 0;
-
-    const distance = size * 1.2;
-
-    const pokemonCenterX = middleX + normalX * distance;
-    const pokemonCenterY = middleY + normalY * distance;
     return {
       position: "absolute" as const,
-      left: withSpring(pokemonCenterX - size / 2),
-      top: withSpring(pokemonCenterY - size / 2),
-      width: withSpring(size),
-      height: withSpring(size),
-      transform: [{ rotate: withSpring(`${angle}deg`) }],
+      left: withSpring(pokemonLeft.value),
+      top: withSpring(pokemonTop.value),
+      width: withSpring(pokemonWidth.value),
+      height: withSpring(pokemonHeight.value),
+      transform: [{ rotate: withSpring(pokemonRotation.value) }],
     };
   });
 
   const uri = pokemon?.url ?? null;
+
+  const onFacesDetected = useCallback(
+    (faces: Face[]) => {
+      "worklet";
+      const face = faces[0] ?? null;
+      if (!face) return;
+      const leftEye = isAndroid
+        ? face.landmarks?.RIGHT_EYE
+        : face.landmarks?.LEFT_EYE;
+      const rightEye = isAndroid
+        ? face.landmarks?.LEFT_EYE
+        : face.landmarks?.RIGHT_EYE;
+
+      const hasEyes = leftEye && rightEye;
+
+      const dx = hasEyes ? rightEye.x - leftEye.x : 0;
+      const dy = hasEyes ? rightEye.y - leftEye.y : 0;
+      const size = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+      const middleX = hasEyes ? (leftEye.x + rightEye.x) / 2 : 0;
+      const middleY = hasEyes ? (leftEye.y + rightEye.y) / 2 : 0;
+
+      const normalX = size > 0 ? dy / size : 0;
+      const normalY = size > 0 ? -dx / size : 0;
+
+      const distance = size * 1.2;
+
+      const pokemonCenterX = middleX + normalX * distance;
+      const pokemonCenterY = middleY + normalY * distance;
+      /* eslint-disable react-hooks/immutability -- Reanimated shared values */
+      pokemonLeft.value = pokemonCenterX - size / 2;
+      pokemonTop.value = pokemonCenterY - size / 2;
+      pokemonWidth.value = size;
+      pokemonHeight.value = size;
+      pokemonRotation.value = `${angle}deg`;
+      /* eslint-enable react-hooks/immutability */
+    },
+    [
+      isAndroid,
+      pokemonLeft,
+      pokemonTop,
+      pokemonWidth,
+      pokemonHeight,
+      pokemonRotation,
+    ],
+  );
 
   return (
     <View
@@ -79,10 +107,7 @@ export default function CameraWithFaceDetection({
         windowWidth={windowSize.width}
         windowHeight={windowSize.height}
         cameraFacing="front"
-        onFacesDetected={(faces) => {
-          "worklet";
-          face.value = faces[0] ?? null;
-        }}
+        onFacesDetected={onFacesDetected}
         onError={(error) => console.error("Face detection error:", error)}
       />
       {uri && (
